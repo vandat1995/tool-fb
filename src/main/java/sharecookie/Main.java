@@ -129,9 +129,9 @@ public class Main {
 
 		@Override
 		public void run() {
-			List<String> listGroup = getListGroup(obj.getCookie());
-			obj.setListGroup(listGroup);
-			shareToGroup(obj);
+			List<String> listGroup = getListGroup(this.obj.getCookie());
+			this.obj.setListGroup(listGroup);
+			shareToGroup(this.obj);
 		}
 	}
 
