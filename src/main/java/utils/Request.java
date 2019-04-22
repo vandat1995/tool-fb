@@ -15,17 +15,19 @@ import java.util.List;
 
 public class Request {
 
-	public static String get(String url, String cookie) throws IOException {
+	public static String get(String url, String cookie, String userAgent) throws IOException {
 
 		String result = "";
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Cookie", cookie);
+		if (!userAgent.equals("")) {
+			get.addHeader("user-agent:", userAgent);
+		}
 
 		HttpResponse res = client.execute(get);
 
 		if (res.getStatusLine().getStatusCode() == 200) {
-
 			result = new BasicResponseHandler().handleResponse(res);
 		}
 

@@ -59,7 +59,7 @@ public class Main {
 
 	private static List<String> getListGroup(String cookie) {
 		try {
-			String html = Request.get(LIST_GROUP_URL, cookie);
+			String html = Request.get(LIST_GROUP_URL, cookie, "");
 			return ParseRaw.getListIdGroup(html);
 
 		} catch (Exception ex) {
@@ -82,7 +82,7 @@ public class Main {
 
 			try {
 				String urlGetInfo = BASE_URL + videoId;
-				String rawHtml = Request.get(urlGetInfo, obj.getCookie());
+				String rawHtml = Request.get(urlGetInfo, obj.getCookie(), userAgent);
 				String dtsg = ParseRaw.getFbDtsg(rawHtml);
 				if (dtsg.equals("") == true) {
 					System.out.println(obj.getUid() + " => Cookie die.");
