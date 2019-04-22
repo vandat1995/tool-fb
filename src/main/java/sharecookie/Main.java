@@ -84,6 +84,10 @@ public class Main {
 				String urlGetInfo = BASE_URL + videoId;
 				String rawHtml = Request.get(urlGetInfo, obj.getCookie());
 				String dtsg = ParseRaw.getFbDtsg(rawHtml);
+				if (dtsg.equals("") == true) {
+					System.out.println(obj.getUid() + " => Cookie die.");
+					break;
+				}
 				String postId = ParseRaw.getPostIdOfVideo(rawHtml);
 				String pageId = ParseRaw.getPageIdOfVideo(rawHtml);
 				String uuid = UUID.randomUUID().toString();
