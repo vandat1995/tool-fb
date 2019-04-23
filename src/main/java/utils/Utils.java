@@ -6,14 +6,15 @@ import java.net.ServerSocket;
 public class Utils {
 
 	public static int getFreeSocketPort() throws IOException {
-		ServerSocket socket = new ServerSocket(0);
+		int socksPort;
 		try {
-			return socket.getLocalPort();
+			ServerSocket socket = new ServerSocket(0);
+			socksPort = socket.getLocalPort();
+			socket.close();
 		} catch (Exception ex) {
 			System.out.println(ex);
-		} finally {
-			socket.close();
+			socksPort = 0;
 		}
-		return 0;
+		return 0 != socksPort ? socksPort : getFreeSocketPort();
 	}
 }
