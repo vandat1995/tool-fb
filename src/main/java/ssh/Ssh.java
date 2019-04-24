@@ -14,6 +14,13 @@ public class Ssh {
 		this.port = 22;
 	}
 
+	public Ssh(String host, int port, String user, String pass) {
+		this.host = host;
+		this.username = user;
+		this.password = pass;
+		this.port = port;
+	}
+
 	public String getHost() {
 		return host;
 	}

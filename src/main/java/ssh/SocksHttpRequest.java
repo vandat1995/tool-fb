@@ -5,13 +5,11 @@ import com.chilkatsoft.CkHttpRequest;
 import com.chilkatsoft.CkHttpResponse;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SocksHttpRequest {
 
 	private int socksPort;
+	private boolean ssl = false;
 	private CkHttp http;
 	private CkHttpRequest request;
 	private CkHttpResponse response;
@@ -29,33 +27,39 @@ public class SocksHttpRequest {
 		this.http.put_SocksVersion(5);
 	}
 
-	public Map<String, String> get(String url) {
-		HashMap<String, String> result = new HashMap<>();
+	public SocksHttpRequest(String socksHost, int socksPort) {
+		this();
+		this.socksPort = socksPort;
+		this.http.put_SocksHostname(socksHost);
+		this.http.put_SocksPort(this.socksPort);
+		this.http.put_SocksVersion(5);
+	}
+
+	public SocksHttpResponse get(String url) {
+		SocksHttpResponse res = new SocksHttpResponse();
 		try {
 			this.request.SetFromUrl(url);
 			this.request.UseGet();
 			URI uri = new URI(url);
 			int port = 80;
-			boolean ssl = false;
-			response = http.SynchronousRequest(uri.getHost(), port, ssl, this.request);
+			response = http.SynchronousRequest(uri.getHost(), port, this.ssl, this.request);
 			if (null == response) {
-				return result;
+				return null;
 			}
-
-			result.put("statusCode", String.valueOf(response.get_StatusCode()));
-			result.put("body", response.bodyStr());
-			return result;
+			int statusCode = response.get_StatusCode();
+			res.setStatusCode(statusCode);
+			res.setBody(response.bodyStr());
 
 		} catch (Exception ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
+			return null;
 		}
-		return result;
-
+		return res;
 	}
 
 
-	public Map<String, String> get(String url, String cookie, String userAgent) throws URISyntaxException {
-		HashMap<String, String> result = new HashMap<>();
+	public SocksHttpResponse get(String url, String cookie, String userAgent) {
+		SocksHttpResponse res = new SocksHttpResponse();
 		try {
 			this.http.put_UserAgent(userAgent);
 			this.request.SetFromUrl(url);
@@ -63,28 +67,19 @@ public class SocksHttpRequest {
 			this.request.AddHeader("Cookie", cookie);
 			URI uri = new URI(url);
 			int port = 80;
-			boolean ssl = false;
-			response = http.SynchronousRequest(uri.getHost(), port, ssl, this.request);
+			response = http.SynchronousRequest(uri.getHost(), port, this.ssl, this.request);
 			if (null == response) {
-				result.put("success", "false");
-				return result;
+				return null;
 			}
 			int statusCode = response.get_StatusCode();
-			if (200 == statusCode) {
-				result.put("success", "true");
-				result.put("body", response.bodyStr());
-				result.put("statusCode", "200");
-				return result;
-			}
-			result.put("statusCode", String.valueOf(response.get_StatusCode()));
-			result.put("success", "false");
-			System.out.println(response.bodyStr());
-			System.out.println(response.bodyQP());
+			res.setStatusCode(statusCode);
+			res.setBody(response.bodyStr());
 
 		} catch (Exception ex) {
-			result.put("success", "false");
+			ex.printStackTrace();
+			return null;
 		}
-		return result;
+		return res;
 
 	}
 
