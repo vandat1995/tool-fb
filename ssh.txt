@@ -1,0 +1,9 @@
+118.241.131.136|admin|password|Japan (JP)|214-0021|JP|Tokyo|Tokyo|+09:00|SSH.T-MMO.COM
+150.147.215.187|admin|password|Japan (JP)|440-0845|JP|Toyohashi|Aichi|+09:00|SSH.T-MMO.COM
+118.27.34.223|ftpuser|ftpuser|Japan (JP)|214-0021|JP|Tokyo|Tokyo|+09:00|SSH.T-MMO.COM
+210.227.112.122|sysadmin|PASS|Japan (JP)|214-0021|JP|Tokyo|Tokyo|+09:00|SSH.T-MMO.COM
+133.232.64.88|contec|contec|Japan (JP)|214-0021|JP|Tokyo|Tokyo|+09:00|SSH.T-MMO.COM
+202.19.222.228|admin|admin|Japan (JP)|214-0021|JP|Tokyo|Tokyo|+09:00|SSH.T-MMO.COM
+153.142.206.87|root|alpine|Japan (JP)|960-8042|JP|Fukushima|Fukushima|+09:00|SSH.T-MMO.COM
+202.218.48.11|koga|koga|Japan (JP)|571-0061|JP|Kadoma|Osaka|+09:00|SSH.T-MMO.COM
+180.13.80.183|admin|password|Japan (JP)|371-0802|JP|Maebashi|Gunma|+09:00|SSH.T-MMO.COM

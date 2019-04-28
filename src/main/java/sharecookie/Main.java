@@ -1,4 +1,7 @@
 package sharecookie;
+/**
+ * Share video vao group
+ */
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.NameValuePair;
@@ -48,7 +51,7 @@ public class Main {
 			for (String cookie : listCookie) {
 				String uid = ParseRaw.getUidFromCookie(cookie);
 				ShareDto obj = new ShareDto(uid, cookie);
-				executor.submit(new Main.Task(obj));
+				executor.submit(new Task(obj));
 			}
 			executor.shutdown();
 
@@ -84,7 +87,7 @@ public class Main {
 				String urlGetInfo = BASE_URL + videoId;
 				String rawHtml = Request.get(urlGetInfo, obj.getCookie(), userAgent);
 				String dtsg = ParseRaw.getFbDtsg(rawHtml);
-				if (dtsg.equals("") == true) {
+				if (dtsg.equals("")) {
 					System.out.println(obj.getUid() + " => Cookie die.");
 					break;
 				}

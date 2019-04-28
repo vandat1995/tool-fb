@@ -3,28 +3,56 @@ package ssh;
 import com.chilkatsoft.CkHttp;
 import com.chilkatsoft.CkHttpRequest;
 import com.chilkatsoft.CkHttpResponse;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.net.URI;
+import java.util.Map;
 
 public class SocksHttpRequest {
 
 	private int socksPort;
 	private boolean ssl = false;
 	private CkHttp http;
-	private CkHttpRequest request;
+	//private CkHttpRequest request;
 	private CkHttpResponse response;
 
 	public SocksHttpRequest() {
 		this.http = new CkHttp();
-		this.request = new CkHttpRequest();
+		//this.request = new CkHttpRequest();
 	}
 
 	public SocksHttpRequest(int socksPort) {
 		this();
 		this.socksPort = socksPort;
-		this.http.put_SocksHostname("localhost");
+		this.http.put_SocksHostname("127.0.0.1");
 		this.http.put_SocksPort(this.socksPort);
 		this.http.put_SocksVersion(5);
+	}
+
+	public SocksHttpRequest(int socksPort, int timeout) {
+		this();
+		this.http.put_ConnectTimeout(timeout);
+		this.socksPort = socksPort;
+		this.http.put_SocksHostname("127.0.0.1");
+		this.http.put_SocksPort(this.socksPort);
+		this.http.put_SocksVersion(5);
+	}
+
+	public SocksHttpRequest(int socksPort, int timeout, String cookie, String userAgent) {
+		this();
+		this.http.put_ConnectTimeout(timeout);
+		this.socksPort = socksPort;
+		this.http.put_SocksHostname("127.0.0.1");
+		this.http.put_SocksPort(this.socksPort);
+		this.http.put_SocksVersion(5);
+		this.http.put_UserAgent(userAgent);
+		this.http.AddQuickHeader("Cookie", cookie);
+	}
+
+	public SocksHttpRequest(String cookie, String userAgent) {
+		this();
+		this.http.put_UserAgent(userAgent);
+		this.http.AddQuickHeader("Cookie", cookie);
 	}
 
 	public SocksHttpRequest(String socksHost, int socksPort) {
@@ -38,18 +66,9 @@ public class SocksHttpRequest {
 	public SocksHttpResponse get(String url) {
 		SocksHttpResponse res = new SocksHttpResponse();
 		try {
-			this.request.SetFromUrl(url);
-			this.request.UseGet();
-			URI uri = new URI(url);
-			int port = 80;
-			response = http.SynchronousRequest(uri.getHost(), port, this.ssl, this.request);
-			if (null == response) {
-				return null;
-			}
-			int statusCode = response.get_StatusCode();
-			res.setStatusCode(statusCode);
-			res.setBody(response.bodyStr());
-
+			String html = this.http.quickGetStr(url);
+			res.setStatusCode(this.http.get_LastStatus());
+			res.setBody(html);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
@@ -57,30 +76,39 @@ public class SocksHttpRequest {
 		return res;
 	}
 
-
-	public SocksHttpResponse get(String url, String cookie, String userAgent) {
+	public SocksHttpResponse postMultipart(String uri, String path, Map<String, String> formData, String cookie, String ua) {
 		SocksHttpResponse res = new SocksHttpResponse();
+		CkHttpRequest request = new CkHttpRequest();
 		try {
-			this.http.put_UserAgent(userAgent);
-			this.request.SetFromUrl(url);
-			this.request.UseGet();
-			this.request.AddHeader("Cookie", cookie);
-			URI uri = new URI(url);
+			request.put_Path(path);
+			request.UsePost();
+			request.AddHeader("Cookie", cookie);
+			request.AddHeader("User-agent", ua);
+			request.put_ContentType("multipart/form-data");
+			request.put_Boundary("----WebKitFormBoundary" + RandomStringUtils.randomAlphanumeric(16));
+
+			// data o day
+			formData.entrySet().forEach(e -> request.AddParam(e.getKey(), e.getValue()));
+			//System.out.println(request.generateRequestText());
+
+			//URI uri = new URI(url);
 			int port = 80;
-			response = http.SynchronousRequest(uri.getHost(), port, this.ssl, this.request);
-			if (null == response) {
+			this.response = http.SynchronousRequest(uri, port, this.ssl, request);
+			if (null == this.response) {
 				return null;
 			}
-			int statusCode = response.get_StatusCode();
+			int statusCode = this.response.get_StatusCode();
 			res.setStatusCode(statusCode);
-			res.setBody(response.bodyStr());
+			res.setBody(this.response.bodyStr());
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
 		}
-		return res;
 
+		return res;
 	}
+
+
 
 }
