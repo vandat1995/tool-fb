@@ -52,19 +52,19 @@ public class TeshSsh {
 
 		//CkHttp http = new CkHttp();
 		SocksHttpRequest req = new SocksHttpRequest(cookie, ua);
-//		String urlGetInfo = BASE_URL + "composer/mbasic/?c_src=share&referrer=feed&sid="+ videoId +"&m=group&target=" + groupId;
-//		String html = req.get(urlGetInfo).getBody();
-//		String pathShare = ParseRaw.getShareUrl(html);
-//		System.out.println(pathShare);
+		String urlGetInfo = BASE_URL + "composer/mbasic/?c_src=share&referrer=feed&sid="+ videoId +"&m=group&target=" + groupId;
+		String html = req.get(urlGetInfo).getBody();
+		String pathShare = ParseRaw.getShareUrl(html);
+		System.out.println(pathShare);
 //		pathShare = pathShare.replaceAll("amp;", "");
 //		String dtsg = ParseRaw.getFbDtsg(html);
 //		System.out.println(dtsg);
 //		String csid = ParseRaw.getCsid(pathShare);
 
-		String html2 = req.get(LIST_GROUP_URL).getBody();
-		System.out.println(html2);
-		System.out.println(ParseRaw.getFbDtsg(html2));
-		System.out.println(ParseRaw.getShareUrl(html2));
+//		String html2 = req.get(LIST_GROUP_URL).getBody();
+//		System.out.println(html2);
+//		System.out.println(ParseRaw.getFbDtsg(html2));
+//		System.out.println(ParseRaw.getShareUrl(html2));
 
 //
 //		Map<String, String> formData = new HashMap<>();
@@ -90,6 +90,7 @@ public class TeshSsh {
 //
 //		String htmlPost = req.postMultipart("mbasic.facebook.com", pathShare, formData, cookie, ua).getBody();
 //		System.out.println(htmlPost);
+
 
 
 

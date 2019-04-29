@@ -34,6 +34,7 @@ public class MainSsh {
 	private static int limit;
 	private static int delay;
 	private static int nThread;
+	private static int _useSsh;
 	private static Random rand = new Random();
 	private static List<String> listSSH;
 
@@ -49,6 +50,8 @@ public class MainSsh {
 			delay = Integer.parseInt(new Scanner(System.in).nextLine());
 			System.out.print("Nhập số group / acc muốn chạy: ");
 			limit = Integer.parseInt(new Scanner(System.in).nextLine());
+			System.out.print("Có sử dụng SSH hay không? (1: ssh, 0: ip máy): ");
+			_useSsh = Integer.parseInt(new Scanner(System.in).nextLine());
 
 			System.out.println("Đang tiến hành share...");
 			List<String> listCookie = FileUtils.readLines(new File(COOKIE_FILE_PATH), "UTF-8");
@@ -82,9 +85,15 @@ public class MainSsh {
 
 	private static void shareToGroup(ShareDto obj) {
 		int i = 0;
-		int socksPort = getSocksPort();
 		String userAgent = RandomUserAgent.getRandomUserAgent();
-		SocksHttpRequest request = new SocksHttpRequest(socksPort, HTTP_REQUEST_TIMEOUT, obj.getCookie(), userAgent);
+
+		// Nếu không sài ssh thì thôi
+		if (_useSsh == 0) {
+			Connection conn = new Connection(new Ssh("123", "123", "123"));
+		}
+		int socksPort = _useSsh == 1 ? getSocksPort() : 0;
+		SocksHttpRequest request = _useSsh == 1 ? new SocksHttpRequest(socksPort, HTTP_REQUEST_TIMEOUT, obj.getCookie(), userAgent) : new SocksHttpRequest(obj.getCookie(), userAgent);
+
 		List<String> listGroup = getListGroup(request);
 		obj.setListGroup(listGroup);
 		if (listGroup.size() < 1) {
