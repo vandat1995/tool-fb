@@ -4,6 +4,7 @@ import com.chilkatsoft.CkHttp;
 import com.chilkatsoft.CkHttpRequest;
 import com.chilkatsoft.CkHttpResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import sharecookie.ProxyDto;
 
 import java.net.URI;
 import java.util.Map;
@@ -61,6 +62,19 @@ public class SocksHttpRequest {
 		this.http.put_SocksHostname(socksHost);
 		this.http.put_SocksPort(this.socksPort);
 		this.http.put_SocksVersion(5);
+	}
+
+	public SocksHttpRequest(int timeout, String cookie, String userAgent, ProxyDto socks) {
+		this();
+		this.socksPort = socks.getPort();
+		this.http.put_ConnectTimeout(timeout);
+		this.http.put_SocksHostname(socks.getHost());
+		this.http.put_SocksPort(this.socksPort);
+		this.http.put_SocksUsername(socks.getUser());
+		this.http.put_SocksPassword(socks.getPass());
+		this.http.put_SocksVersion(6);
+		this.http.put_UserAgent(userAgent);
+		this.http.AddQuickHeader("Cookie", cookie);
 	}
 
 	public SocksHttpResponse get(String url) {

@@ -29,6 +29,7 @@ public class MainSsh {
 	private static final String COOKIE_FILE_PATH = "./cookie.txt";
 	private static final String MESSAGE_PATH = "./message.txt";
 	private static final String SSH_PATH = "./ssh.txt";
+	private static final String PROXY_PATH = "./proxy.txt";
 	private static String videoId;
 	private static List<String> message;
 	private static int limit;
@@ -37,6 +38,8 @@ public class MainSsh {
 	private static int _useSsh;
 	private static Random rand = new Random();
 	private static List<String> listSSH;
+	private static List<String> listProxy;
+	private static Connection conn = new Connection(new Ssh("123", "123", "123"));
 
 	public static void main(String[] args) {
 
@@ -50,12 +53,13 @@ public class MainSsh {
 			delay = Integer.parseInt(new Scanner(System.in).nextLine());
 			System.out.print("Nhập số group / acc muốn chạy: ");
 			limit = Integer.parseInt(new Scanner(System.in).nextLine());
-			System.out.print("Có sử dụng SSH hay không? (1: ssh, 0: ip máy): ");
+			System.out.print("Có sử dụng SSH, Proxy hay không? (0: ip máy, 1: SSH, 2: Proxy): ");
 			_useSsh = Integer.parseInt(new Scanner(System.in).nextLine());
 
 			System.out.println("Đang tiến hành share...");
 			List<String> listCookie = FileUtils.readLines(new File(COOKIE_FILE_PATH), "UTF-8");
 			listSSH = FileUtils.readLines(new File(SSH_PATH), "UTF-8");
+			listProxy = FileUtils.readLines(new File(PROXY_PATH));
 			message = FileUtils.readLines(new File(MESSAGE_PATH), "UTF-8");
 
 			ExecutorService executor = Executors.newFixedThreadPool(nThread);
@@ -86,13 +90,18 @@ public class MainSsh {
 	private static void shareToGroup(ShareDto obj) {
 		int i = 0;
 		String userAgent = RandomUserAgent.getRandomUserAgent();
+		SocksHttpRequest request = null;
+		int socksPort;
 
-		// Nếu không sài ssh thì thôi
-		if (_useSsh == 0) {
-			Connection conn = new Connection(new Ssh("123", "123", "123"));
+		if (1 == _useSsh) {
+			socksPort = getSocksPort();
+			new SocksHttpRequest(socksPort, HTTP_REQUEST_TIMEOUT, obj.getCookie(), userAgent);
+		} else if (2 == _useSsh) {
+			ProxyDto proxy = getProxy();
+			request = new SocksHttpRequest(HTTP_REQUEST_TIMEOUT, obj.getCookie(), userAgent, proxy);
+		} else {
+			request = new SocksHttpRequest(obj.getCookie(), userAgent);
 		}
-		int socksPort = _useSsh == 1 ? getSocksPort() : 0;
-		SocksHttpRequest request = _useSsh == 1 ? new SocksHttpRequest(socksPort, HTTP_REQUEST_TIMEOUT, obj.getCookie(), userAgent) : new SocksHttpRequest(obj.getCookie(), userAgent);
 
 		List<String> listGroup = getListGroup(request);
 		obj.setListGroup(listGroup);
@@ -165,6 +174,27 @@ public class MainSsh {
 		public void run() {
 			shareToGroup(this.obj);
 		}
+	}
+
+	public static ProxyDto getProxy() {
+		if (null == listProxy || listProxy.size() == 0) {
+			System.out.println("Không có proxy.");
+			System.exit(1);
+		}
+		ProxyDto proxy = null;
+		try {
+			locker.lock();
+			String strProxy = listProxy.get(0);
+			listProxy.remove(0);
+			String[] arrProxy = strProxy.split(":");
+			proxy = new ProxyDto(Integer.parseInt(arrProxy[1]), arrProxy[0], arrProxy[2], arrProxy[3]);
+		} catch (Exception e) {
+			e.printStackTrace();
+			proxy = getProxy();
+		} finally {
+			locker.unlock();
+		}
+		return proxy;
 	}
 
 	public static Ssh getSsh() {
